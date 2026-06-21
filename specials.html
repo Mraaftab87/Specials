@@ -313,103 +313,62 @@
     <script>
         const checkboxes = document.querySelectorAll('.filter-cb');
         const cards = document.querySelectorAll('.card');
-        const activeFiltersContainer = document.getElementById('active-filters-content');
-
-        function filterBasicCards() {
-
-            let activeFilters = [];
-
-            activeFiltersContainer.innerHTML = '';
-            let checkBoxTicked = false;
-
-            checkboxes.forEach(function (cb) {
-                if (cb.checked == true) {
-                    activeFilters.push(cb.value.toLowerCase());
-                    checkBoxTicked = true;
-
-                    let tag = document.createElement('span');
-                    tag.className = 'filter-tag';
-                    tag.innerHTML = `${cb.value} <span style="color: #888;">&times;</span>`;
-
-                    tag.addEventListener('click', function () {
-                        cb.checked = false;
-                        filterBasicCards();
-                    });
-                    activeFiltersContainer.appendChild(tag);
-                }
-            });
-            if (checkBoxTicked === true) {
-                let clearBtn = document.createElement('span');
-                clearBtn.className = 'filter-tag clear-filters';
-                clearBtn.innerHTML = 'Clear Filters <span style=" color: #888;">&times;</span>';
-
-                clearBtn.addEventListener('click', function () {
-                    checkboxes.forEach(function (box) {
-                        box.checked = false;
-                    });
-                    filterBasicCards();
-                });
-                activeFiltersContainer.appendChild(clearBtn);
-            }
-            cards.forEach(function (card) {
-                let cardCategory = card.getAttribute('data-category');
-                let categoryString = cardCategory ? cardCategory.toLowerCase() : "";
-
-                if (activeFilters.length === 0) {
-                    card.style.display = 'flex';
-                }
-                else {
-                    let matchFound = false;
-                    activeFilters.forEach(function (filterWord) {
-                        if (categoryString.includes(filterWord)) {
-                            matchFound = true;
-                        }
-                    });
-                    if (matchFound === true) {
-                        card.style.display = 'flex';
-                    }
-                    else {
-                        card.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        checkboxes.forEach(function (cb) {
-            cb.addEventListener('change', filterBasicCards);
-        });
-
+        const tagsContainer = document.getElementById('active-filters-content');
         const sortDropdown = document.getElementById('sort-dropdown');
         const cardsContainer = document.getElementById('cards-container');
-
-        function sortCardsByPrice() {
-            let sortValue = sortDropdown.value;
-
-            if (sortValue === 'default') {
-                return;
-            }
-
-            let cardsArray = Array.from(cardsContainer.querySelectorAll('.card'));
-
-            cardsArray.sort(function (cardA, cardB) {
-
-                let priceA = parseInt(cardA.querySelector('.card-price').getAttribute('data-price'));
-                let priceB = parseInt(cardB.querySelector('.card-price').getAttribute('data-price'));
-
-                if (sortValue === 'lowToHigh') {
-                    return priceA - priceB;
-                }
-                else if (sortValue === 'highToLow') {
-                    return priceB - priceA;
+        function updatePage() {
+            let tickedValues = [];
+            tagsContainer.innerHTML = '';
+            checkboxes.forEach(function (cb) {
+                if (cb.checked) {
+                    tickedValues.push(cb.value.toLowerCase());
+                    let tag = document.createElement('span');
+                    tag.className = 'filter-tag';
+                    tag.innerHTML = `${cb.value} <span>&times;</span>`;
+                    tag.onclick = function () { cb.checked = false; updatePage(); };
+                    tagsContainer.appendChild(tag);
                 }
             });
-
-            cardsArray.forEach(function (card) {
-                cardsContainer.appendChild(card);
+            if (tickedValues.length > 0) {
+                let clearBtn = document.createElement('span');
+                clearBtn.className = 'filter-tag clear-filters';
+                clearBtn.innerHTML = 'Clear Filters <span>&times;</span>';
+                clearBtn.onclick = function () {
+                    checkboxes.forEach(function (cb) { cb.checked = false; });
+                    updatePage();
+                };
+                tagsContainer.appendChild(clearBtn);
+            }
+            cards.forEach(function (card) {
+                let category = card.getAttribute('data-category').toLowerCase();
+                let matchFound = false;
+                tickedValues.forEach(function (val) {
+                    if (category.includes(val)) matchFound = true;
+                });
+                if (tickedValues.length === 0 || matchFound) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
             });
         }
+        function sortCards() {
+            if (sortDropdown.value === 'default') return;
 
-        sortDropdown.addEventListener('change', sortCardsByPrice);
+            let cardsArray = Array.from(cards);
+
+            cardsArray.sort(function (a, b) {
+                let priceA = parseInt(a.querySelector('.card-price').getAttribute('data-price'));
+                let priceB = parseInt(b.querySelector('.card-price').getAttribute('data-price'));
+
+                if (sortDropdown.value === 'lowToHigh') return priceA - priceB;
+                if (sortDropdown.value === 'highToLow') return priceB - priceA;
+            });
+
+            cardsArray.forEach(function (card) { cardsContainer.appendChild(card); });
+        }
+        checkboxes.forEach(function (cb) { cb.addEventListener('change', updatePage); });
+        sortDropdown.addEventListener('change', sortCards);
     </script>
 
 </html>
