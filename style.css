@@ -4,7 +4,7 @@
 }
 
 body {
-    font-family: "Source Sans Pro", Source Sans Pro, Arial, Sans-serif;
+    font-family: "Source Sans Pro", Arial, sans-serif;
     overflow-x: hidden;
 }
 
@@ -342,6 +342,29 @@ header {
     color: #2e3273;
     font-weight: bold;
     margin: auto 15px 15px 15px;
+}
+
+.top-section .sort-dropdown select {
+    padding: 8px 30px 8px 15px;
+    font-size: 15px;
+    font-family: "Source Sans Pro", Arial, sans-serif;
+    color: #555555;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    appearance: auto; 
+}
+
+.top-section .sort-dropdown select:hover {
+    border-color: #8f8f8f;
+}
+
+.top-section .sort-dropdown select:focus {
+    border-color: #2e3273;
+    box-shadow: 0 0 5px rgba(46, 50, 115, 0.2);
 }
 
 /* footer section start */
